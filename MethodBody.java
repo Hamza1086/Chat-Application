@@ -381,6 +381,7 @@ public class MethodBody implements Runnable{
     }
 
     public void run() {
+
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Waiting for connection...");
             Socket ss = serverSocket.accept();
@@ -394,6 +395,8 @@ public class MethodBody implements Runnable{
                 while (true) {
                     if (in.hasNextLine()) {
                         String clientMessage = in.nextLine();
+                        ms.myMsg[index][ms.count[index]] = new Message(name, clientMessage, seen);
+                        ms.count[index]++;
                         System.out.println("Message from client: " + clientMessage);
                         if (clientMessage.equalsIgnoreCase("bye")) {
                             System.out.println("Client disconnected.");
