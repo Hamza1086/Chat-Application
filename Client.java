@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
@@ -13,9 +12,7 @@ public class Client {
     static Scanner sc;
 
     public static void main(String[] args) {
-
         try {
-
             Socket socket = new Socket(IP, PORT);
             System.out.println("Connected to server\nStart communication");
 
@@ -23,9 +20,23 @@ public class Client {
             in = new Scanner(socket.getInputStream());
             sc = new Scanner(System.in);
 
+            new Thread(() -> {
+                while (true) {
+                    if (in.hasNextLine()) {
+                        String serverMessage = in.nextLine();
+                        System.out.println("Message from server: " + serverMessage);
+
+                        if (serverMessage.equalsIgnoreCase("bye")) {
+                            System.out.println("Server disconnected.");
+                            break;
+                        }
+                    }
+                }
+            }).start();
+
             while (true) {
 
-                System.out.print("Message from Client: ");
+                System.out.print("Message from client: ");
                 String clientMessage = sc.nextLine();
                 out.println(clientMessage);
 
@@ -33,22 +44,8 @@ public class Client {
                     System.out.println("Ending communication.");
                     break;
                 }
-
-                if (in.hasNextLine()) {
-                    String serverMessage = in.nextLine();
-                    System.out.println("Message from server: " + serverMessage);
-
-                    if (serverMessage.equalsIgnoreCase("bye")) {
-                        System.out.println("Server disconnected.");
-                        break;
-                    }
-                }
-
             }
-
-        }
-
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

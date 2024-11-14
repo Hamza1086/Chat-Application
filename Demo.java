@@ -1,18 +1,9 @@
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
+
 import java.util.Random;
 import java.util.Scanner;
-import java.net.Socket;
 
-public class Demo implements Runnable {
-
-    static final int PORT = 8080;
-    static Scanner scanner = new Scanner(System.in);
-    static PrintWriter out;
-    static Scanner sc;
-    static Scanner in;
+public class Demo {
 
     public static void main(String[] args) {
 
@@ -22,12 +13,12 @@ public class Demo implements Runnable {
         Random rand = new Random();
         int choice ;
         d1.defMsgs(m1);
-        Runnable r1 = new Demo();
 
         while(true){
             
         System.out.print("\nEnter 1 to view the contact List\n" +
-                "Enter 2 to Send Message to Receiver\nEnter 3 to view the Messages\nEnter 4 to visiting Status based Messages\nEnter 5 to add Contact\nEnter 6 to delete Contact: ");
+                "Enter 2 to Send Message to Receiver\nEnter 3 to view the Messages\nEnter 4 to visiting Status based Messages" +
+                "\nEnter 5 to add Contact\nEnter 6 to delete Contact\nEnter 7 to Establish connection with the server: ");
         choice = sc.nextInt();
         sc.nextLine();
 
@@ -45,10 +36,6 @@ public class Demo implements Runnable {
                     String name = sc.nextLine();
                     m1.sendMsg(name,"Default",false);
 
-                    if(name.equals("Muzamil")) {
-                        r1.run();
-                    }
-
                     break;  
                 case 3:
                     m1.receiverMsgs();
@@ -61,51 +48,13 @@ public class Demo implements Runnable {
                     break;          
                 case 6:
                     m1.deleteContact();
-                    break;    
+                    break;
+                case 7:
+                    m1.runClient();
+                    break;
                 default:
                     break;
             }
-        }
-    }
-
-    public void run() {
-
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-
-            System.out.println("Waiting for connection... ");
-            Socket ss = serverSocket.accept();
-            System.out.println("Client Connected ");
-
-            out = new PrintWriter(ss.getOutputStream(), true);
-            in = new Scanner(ss.getInputStream());
-            sc = new Scanner(System.in);
-
-            while (true) {
-
-                if (in.hasNextLine()) {
-                    String clientMessage = in.nextLine();
-                    System.out.println("Message from client: " + clientMessage);
-
-                    if (clientMessage.equalsIgnoreCase("bye")) {
-                        System.out.println("Client disconnected.");
-                        break;
-                    }
-
-                }
-
-                System.out.print("Message from server: ");
-                String serverMessage = sc.nextLine();
-                out.println(serverMessage);
-
-                if (serverMessage.equalsIgnoreCase("bye")) {
-                    System.out.println("Ending communication.");
-                    break;
-                }
-
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

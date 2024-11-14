@@ -1,13 +1,23 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class MethodBody {
+public class MethodBody implements Runnable{
 
     MsgSystem ms;
     Scanner sc = new Scanner(System.in);
+    Runnable r1;
+    static final int PORT = 8080;
+    static PrintWriter out;
+    static Scanner in;
+    static String IP = "localhost";
 
     MethodBody(MsgSystem ms){
         this.ms = ms;
+        this.r1 = this;
     }
 
     public int getReceiverIndex(String recNo) {
@@ -41,11 +51,20 @@ public class MethodBody {
 
     }
 
-    public void methodSendMsg(String recNo, String content, boolean status) {
+    int index;
+    boolean seen;
+    String name;
+    public void methodSendMsg(String recNo, String content, boolean status)  {
 
-        int index = getReceiverIndex(recNo);
+        index = getReceiverIndex(recNo);
+        seen = status;
+        name = recNo;
 
         if (index != -1) {
+
+            if(ms.contact[index].getName().equals("Muzamil")) {
+                r1.run();
+            }
             ms.myMsg[index][ms.count[index]] = new Message(recNo, content, status);
             ms.count[index]++;
             System.out.println("Message sent .. ");
@@ -361,4 +380,79 @@ public class MethodBody {
         }
     }
 
+    public void run() {
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Waiting for connection...");
+            Socket ss = serverSocket.accept();
+            System.out.println("Client Connected");
+
+            out = new PrintWriter(ss.getOutputStream(), true);
+            in = new Scanner(ss.getInputStream());
+            sc = new Scanner(System.in);
+
+            new Thread(() -> {
+                while (true) {
+                    if (in.hasNextLine()) {
+                        String clientMessage = in.nextLine();
+                        System.out.println("Message from client: " + clientMessage);
+                        if (clientMessage.equalsIgnoreCase("bye")) {
+                            System.out.println("Client disconnected.");
+                            break;
+                        }
+                    }
+                }
+            }).start();
+
+            while (true) {
+                System.out.print("Message from server: ");
+                String serverMessage = sc.nextLine();
+                out.println(serverMessage); // Automatically flushes
+
+                if (serverMessage.equalsIgnoreCase("bye")) {
+                    System.out.println("Ending communication.");
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void methodRunClient() {
+
+        try {
+            Socket socket = new Socket(IP, PORT);
+            System.out.println("Connected to server\nStart communication");
+
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new Scanner(socket.getInputStream());
+            sc = new Scanner(System.in);
+
+            new Thread(() -> {
+                while (true) {
+                    if (in.hasNextLine()) {
+                        String serverMessage = in.nextLine();
+                        System.out.println("Message from server: " + serverMessage);
+                        if (serverMessage.equalsIgnoreCase("bye")) {
+                            System.out.println("Server disconnected.");
+                            break;
+                        }
+                    }
+                }
+            }).start();
+
+            while (true) {
+                System.out.print("Message from client: ");
+                String clientMessage = sc.nextLine();
+                out.println(clientMessage);
+
+                if (clientMessage.equalsIgnoreCase("bye")) {
+                    System.out.println("Ending communication.");
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+

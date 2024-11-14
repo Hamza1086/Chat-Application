@@ -47,4 +47,9 @@ public class MsgSystem {
         m1.methodDeleteContact();
     }
 
+    public void runClient(){
+        m1.methodRunClient();
+    }
+
+
 }
