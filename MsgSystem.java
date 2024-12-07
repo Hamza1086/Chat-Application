@@ -1,24 +1,28 @@
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MsgSystem {
 
     Scanner sc = new Scanner(System.in);
 
-    Contacts [] contact = new Contacts[4];
-    static int[] count ;
-    Message[][] myMsg ;
+    List<Contacts> contacts = new ArrayList<Contacts>();
+    List<Integer> count = new ArrayList<>();
+    List<List<Message>> myMsg = new ArrayList<>();
     MethodBody m1;
 
     MsgSystem(){
 
-        contact[0] = new Contacts("03257612367","Hamza");
-        contact[1] = new Contacts("03171665228","Ahmed");
-        contact[2] = new Contacts("03256542789","Muzamil");
-        contact[3] = new Contacts("03316572287","Shehroz");
+        contacts.add(new Contacts("03257612367","Hamza"));
+        contacts.add(new Contacts("03171665228","Ahmed"));
+        contacts.add(new Contacts("03256542789","Muzamil"));
+        contacts.add(new Contacts("03316572287","Shehroz"));
 
-        count = new int[contact.length];
-        myMsg = new Message[contact.length][500];
+        for(int i=0 ;i<contacts.size();i++){
+            count.add(0);
+            myMsg.add(new ArrayList<>());
+        }
         m1 = new MethodBody(this);
 
     }

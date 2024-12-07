@@ -21,11 +21,15 @@ public class Client {
             sc = new Scanner(System.in);
 
             new Thread(() -> {
+                int i=0;
                 while (true) {
                     if (in.hasNextLine()) {
                         String serverMessage = in.nextLine();
+                        if(i==0){
+                            System.out.println("");
+                            i++;
+                        }
                         System.out.println("Message from server: " + serverMessage);
-
                         if (serverMessage.equalsIgnoreCase("bye")) {
                             System.out.println("Server disconnected.");
                             break;

@@ -34,8 +34,9 @@ public class Demo {
                     m1.contactList();
                     System.out.print("Enter the receiver name: ");
                     String name = sc.nextLine();
-                    m1.sendMsg(name,"Default",false);
-
+                    System.out.print("Enter the message: ");
+                    String message = sc.nextLine();
+                    m1.sendMsg(name,message,false);
                     break;  
                 case 3:
                     m1.receiverMsgs();
